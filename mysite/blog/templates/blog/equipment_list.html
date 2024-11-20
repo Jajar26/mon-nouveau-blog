@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liste des équipements - MuscuTaSalle</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f1f1f1; 
+            font-family: 'Algerian', sans-serif; 
+            margin: 20px 0;
+        }
+        .container {
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #006400; 
+             text-align: center;
+        }
+        .card {
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .card-body {
+            background-color: #ffffff;
+            padding: 20px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .badge {
+            font-size: 1.2rem;
+        }
+        h5.card-title {
+            color: #007bff;
+        }
+        .card img {
+            width: 100%;
+            height: auto; 
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <h1> MuscuTaSalle </h1>
+    <p class="text-center">Nombre total de personnes dans la salle : {{ total_athletes }}</p>
+    <div class="container">
+
+        <h2>Équipements Libres</h2>
+        <div class="row">
+            {% for equipment in all_equipments %}
+                {% if equipment.status == 'libre' %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <form method="post" action="{% url 'update_equipment_status' equipment.id %}">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <h2 class="card-title text-center">{{ equipment.name }}</h2>
+                                {% if equipment.image %}
+                                    <img src="{{ equipment.image.url }}" class="card-img-top" alt="{{ equipment.name }}">
+                                {% else %}
+                                    <p class="text-center">Aucune image disponible</p>
+                                {% endif %}
+                                
+                                {% if equipment.reservation_time %}
+                                    <p class="text-center">
+                                        Réservé par : <strong>{{ equipment.reserved_by }}</strong><br>
+                                        Heure de réservation : <strong>{{ equipment.reservation_time|date:"d/m/Y H:i" }}</strong>
+                                    </p>
+                                {% else %}
+                                    <p class="text-center text-muted">Aucune réservation en cours.</p>
+                                {% endif %}
+        
+                                <select name="status" class="form-select w-50 mx-auto" onchange="this.form.submit()">
+                                    <option value="libre" {% if equipment.status == 'libre' %}selected{% endif %}>Libre</option>
+                                    <option value="occupé" {% if equipment.status == 'occupé' %}selected{% endif %}>Occupé</option>
+                                    <option value="réservé" {% if equipment.status == 'réservé' %}selected{% endif %}>Réservé</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        
+
+        <h2>Équipements Occupés</h2>
+        <div class="row">
+            {% for equipment in all_equipments %}
+                {% if equipment.status == 'occupé' %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <form method="post" action="{% url 'update_equipment_status' equipment.id %}">
+                            {% csrf_token %}
+                            <div class="card-body">
+                                <h2 class="card-title text-center">{{ equipment.name }}</h2>
+                                {% if equipment.image %}
+                                    <img src="{{ equipment.image.url }}" class="card-img-top" alt="{{ equipment.name }}">
+                                {% else %}
+                                    <p class="text-center">Aucune image disponible</p>
+                                {% endif %}
+
+                                
+
+                                <select name="status" class="form-select w-50 mx-auto" onchange="this.form.submit()">
+                                    <option value="libre" {% if equipment.status == 'libre' %}selected{% endif %}>Libre</option>
+                                    <option value="occupé" {% if equipment.status == 'occupé' %}selected{% endif %}>Occupé</option>
+                                    <option value="réservé" {% if equipment.status == 'réservé' %}selected{% endif %}>Réservé</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+            <h2>Équipements Réservés</h2>
+            <div class="row">
+            {% for equipment in all_equipments %}
+                {% if equipment.status == 'réservé' %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">
+                                <a href="{% url 'equipment_detail' equipment.id %}" class="text-decoration-none">
+                                    {{ equipment.name }}
+                                </a>
+                            </h5>
+                            {% if equipment.image %}
+                                <img src="{{ equipment.image.url }}" class="card-img-top" alt="{{ equipment.name }}">
+                            {% else %}
+                                <p class="text-center">Aucune image disponible</p>
+                            {% endif %}
+                            <p class="text-center">
+                                Réservé par : <strong>{{ equipment.reserved_by }}</strong><br>
+                                Heure de réservation : <strong>{{ equipment.reservation_time|date:"H:i:s" }}</strong>
+                            </p>
+                            <form method="post" action="{% url 'update_equipment_status' equipment.id %}">
+                                {% csrf_token %}
+                                <select name="status" class="form-select w-50 mx-auto" onchange="this.form.submit()">
+                                    <option value="libre" {% if equipment.status == 'libre' %}selected{% endif %}>Libre</option>
+                                    <option value="occupé" {% if equipment.status == 'occupé' %}selected{% endif %}>Occupé</option>
+                                    <option value="réservé" {% if equipment.status == 'réservé' %}selected{% endif %}>Réservé</option>
+                                </select>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+</body>
+</html>
+
+

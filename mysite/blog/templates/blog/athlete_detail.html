@@ -1,0 +1,24 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Détail de l'Athlète{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ athlete.name }}</h1>
+    <p>Objectif: {{ athlete.fitness_goal }}</p>
+
+    {% if message %}
+        <div class="alert alert-danger mt-3">{{ message }}</div>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-group">
+            <label>Choisir un équipement:</label>
+            {{ form.current_equipment }}
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Utiliser l'équipement</button>
+    </form>
+</div>
+{% endblock %}
+
